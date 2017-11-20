@@ -1,0 +1,15 @@
+{
+  "name": "fetch-jsonp",
+  "homepage": "https://github.com/camsong/fetch-jsonp",
+  "version": "1.1.2",
+  "_release": "1.1.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.1.2",
+    "commit": "9b56eea2d99904046357695484ac99d35ddf822a"
+  },
+  "_source": "https://github.com/camsong/fetch-jsonp.git",
+  "_target": "^1.1.2",
+  "_originalSource": "fetch-jsonp",
+  "_direct": true
+}

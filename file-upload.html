@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File Upload Example - Watson Speech to Text</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+<div class="container">
+<a href="/">&laquo; Examples</a>
+
+<section>
+    <h2>Transcribe and Play user-provided File</h2>
+    <input type="file" id="audiofile"> <button id="button">Transcribe and Play</button> <button id="stop">Stop</button>
+    <p><small><i>Supported types are wav, ogg, webm, and flac. (Playback also requires browser support; we recommend ogg/opus or webm/opus for most cases.)</i></small></p>
+
+    <h2>Output:</h2>
+    <div id="output">--</div>
+</section>
+
+<script src="bower_components/watson-speech/dist/watson-speech.js"></script>
+<!-- window.fetch pollyfill for IE/Edge & Older Chrome/FireFox -->
+<script src="bower_components/fetch/fetch.js"></script>
+<script src="bower_components/base-64/base64.js"></script>
+<script src="bower_components/fetch-jsonp/src/fetch-jsonp.js"></script>
+
+
+<h2>Code for this demo:</h2>
+<pre><code><script style="display: block;">
+//base64 = require('base-64');
+var stream;
+document.querySelector('#button').onclick = function () {
+  /*stream = WatsonSpeech.SpeechToText.recognizeFile({
+    token: "UFK5yonq1dqv7Jk67HHtg9WsGFHlk%2F9jLwrFY5IIqnVwvuy7QGzAwUdpYd600jMLw4P0KyyozGXDqo%2BEGAs1rVnkb1dKvbt1YJMfoTYbjV7tQma%2FEZW5I5AWmFcK8KFFs1rEneAONeEfsVpfZHem923g8B6XilJ5q9Wg4XCnbgdSedv0hnMXElt%2B5RulnyKnUQ0bVKCIhAS5eIb4qNIvJgVyqZlhDPIcLIXryJw68PQ9iTbcneAJ725%2BM9pJCKGpoNqoxWlInMBDnMTnVEV1pkrnCecAtpxFPIB%2Bu7ukbldx9nLyF09DTkq0Q99q4OmJiTdffGlS8Ql8HMjx97z8yT22AJevdHDMvQO7Qfh6I%2FvaxlK2ziJApnP0pTb3iFeQeRXE9jAMMA9B0FrppUpJSiGegQJ7jtNOaKOqJ2br4GfG5kyNMVl2TRffC1Pshh3sKyRfSdjP8s9jxamxnNVperps8ybY%2FJZt7c%2Fnk0AgNN%2BdkhSqAfRY9kulBFezk3nU84V2I4fc%2BYk1%2FmW%2BnSxnje%2B%2FZN1Buj3PrkdHQ5yNH8Gf6EAMZt2x1Yb%2Fyx1%2BFFx7glKxWrkxSV5%2B3QRLuzfwsteazV8SmO09f%2B1i327cTFsKwUdbh%2BeYK761eifb2VL0V0v2L3HkVBQSSt1gVy90IU8kpcsErZbIOSJ61c8vpHFUezc3Nyq5YkPiqDCA%2F4KL6renOkc0DjjL50AQUiQGTl3%2FpckjCQOqPSVfoyBOjpQ6RJc9GQoBeCpQG0Kl8yYBwhG%2BgZ%2Br2Gw56gfabNtGGngn3QJCGBYKmZMlJx7ftpr4jE6PSe5O9%2BCMEjUK9q05MKAzGAuJrMJnJXarjeYW8Rq5GaHbPZImjzNjpSdo0EZ%2FIBplhPCe1Caa55%2BNXltudh4ceyGNjHtb50cAxglX9AVkR9eSi%2FopvuNed9iCo8iKIrfLp4Nk%2FM8IFOxsSMEvxe1MBYgj3%2BIWauPZw00G0Z4qZQCFRDYC%2FOjAswL6Mqs%3D",
+    file: document.querySelector('#audiofile').files[0],
+    play: true, // play the audio out loud
+    outputElement: '#output' // CSS selector or DOM Element (optional)
+  });
+
+  stream.on('error', function(err) {
+      console.log(err);
+  }); */
+  headers = new Headers({
+'mode':'no-cors'
+});
+
+//headers.append('Content-Type', 'text/json');
+headers.append('Authorization', 'Basic ' + base64.encode("116a3520-5bfb-44bd-93a0-14a1828d9ddb" + ":" + "PYZx2fpNAumY"));
+
+token = "U2U60YPQYMHPRniRd9XGxpiSGrJzabQU7%2F8h6wIKl8z3b3XWyXMkTE%2BJzgImLW4vdHTHdBkAZBrYe17beX2TKajJlbMkzSCmwF6FArB4Oj5WpO6rUTNe0uFia32Y9w8QVZyGGoLI%2Fd1e6RcdoUvR9XcT1CsTAqRa%2FEUM4XGxWzfPhHBMCn1s%2BCvSz1GXp3w35hE0rinDphJryRbbDxWBOz%2B9pWgCt2%2F93rMbSeFX3ZETxa4Rahcor8tpUfN6Zo%2B3Ag7Lxxo%2BUO3tuDf3oWh3KorWhHYnRIZBzl7sNYo4GVJSETpCeyNGrA%2FwRbTZ3fl4dbAoXJMjcUucmeiSmFTwz%2FBF0uEI%2BdAv1v%2FKCXUdwNIWD9bBDBfpLR3VYoKUqHicMpYjBt2oXGZP2jzoYC42QAjV3%2Ftstu8W%2FhZWsPEFTxOhrmyLz0LFjILXjb4qf%2Bs6Sp34pSJzYFbqfPIzudwVdVbDLLp0dWjRzqV8lNYMYyPI%2F6ILNeOmHeMZNyvWUHXGxiAXsw9sg2F9T8hQ%2F7Wxg1Oux5FVm%2By9dYghaN64L9y7XbmQdsDpWGN29oieq2JuhJ%2FhcPCNBoeLkzVuZTgSl%2FYHzZeqJFbvGNnQCrIh%2F1NHr9OmrxAjecm%2BUCm5SF808bNoaSjS0c2coirOPyavkOs5za1HqVjgehgoCFdLjFPK2lx%2B50Xuq4S4nZpRq1tt3Q6LtG79uPuT7stKtI6RAiJpsYiDuVgFXfXyPk1bHu05Gnh%2FNvWSrEt7%2FxKS3J8pVDW49%2BipDmU6aHPPKTiT%2FhvZwui7QJrhn0DZXGOyNHH13Exx3GikM80JorU%2FoXXath9PfrfNBShsMRyBWPwhXftKgTQaQtjhrFsczEqu4CcW%2FC9phEvG7ZcflGTUS%2BDVdB2hvW0j%2BFXNb1ViDx0xP8KhD6SLh6YYTEBp4Gq2sXND9mQ53vM5cetLlhi16WYzxlmQle57NJsOHJhKgHObvVPUvbkjAFnT5SQcvRpfYNY%3D";
+//var opts={};
+//  opts.token = token;
+var stream = WatsonSpeech.SpeechToText.recognizeFile({
+  token:token,
+  file: document.querySelector('#audiofile').files[0],
+  play: false, // play the audio out loud
+  outputElement: '#output', // CSS selector or DOM Element (optional),
+  extractResults: true
+});
+
+stream.on('error', function(err) {
+    console.log(err);
+});
+stream.on('close', function(err) {
+    console.log(aaa);
+});
+//stream.onclose = function(evt) { console.log('aaa'); };
+ /*fetch('http://localhost:8080/GetToken/API?callback=abc').then(function(response) {
+    return response.text();
+  }).then(function (token) {
+
+    stream = WatsonSpeech.SpeechToText.recognizeFile({
+      token: token,
+      file: document.querySelector('#audiofile').files[0],
+      play: true, // play the audio out loud
+      outputElement: '#output' // CSS selector or DOM Element (optional)
+    });
+
+    stream.on('error', function(err) {
+        console.log(err);
+    });
+
+  }).catch(function(error) {
+      console.log(error);
+  });
+
+fetchJsonp('http://localhost:8080/GetToken/API', {
+    jsonpCallback: 'callback',
+  })
+  .then(function(response) {
+
+     return response.text;
+  }).then(function(token) {
+    token = "U2U60YPQYMHPRniRd9XGxpiSGrJzabQU7%2F8h6wIKl8z3b3XWyXMkTE%2BJzgImLW4vdHTHdBkAZBrYe17beX2TKajJlbMkzSCmwF6FArB4Oj5WpO6rUTNe0uFia32Y9w8QVZyGGoLI%2Fd1e6RcdoUvR9XcT1CsTAqRa%2FEUM4XGxWzfPhHBMCn1s%2BCvSz1GXp3w35hE0rinDphJryRbbDxWBOz%2B9pWgCt2%2F93rMbSeFX3ZETxa4Rahcor8tpUfN6Zo%2B3Ag7Lxxo%2BUO3tuDf3oWh3KorWhHYnRIZBzl7sNYo4GVJSETpCeyNGrA%2FwRbTZ3fl4dbAoXJMjcUucmeiSmFTwz%2FBF0uEI%2BdAv1v%2FKCXUdwNIWD9bBDBfpLR3VYoKUqHicMpYjBt2oXGZP2jzoYC42QAjV3%2Ftstu8W%2FhZWsPEFTxOhrmyLz0LFjILXjb4qf%2Bs6Sp34pSJzYFbqfPIzudwVdVbDLLp0dWjRzqV8lNYMYyPI%2F6ILNeOmHeMZNyvWUHXGxiAXsw9sg2F9T8hQ%2F7Wxg1Oux5FVm%2By9dYghaN64L9y7XbmQdsDpWGN29oieq2JuhJ%2FhcPCNBoeLkzVuZTgSl%2FYHzZeqJFbvGNnQCrIh%2F1NHr9OmrxAjecm%2BUCm5SF808bNoaSjS0c2coirOPyavkOs5za1HqVjgehgoCFdLjFPK2lx%2B50Xuq4S4nZpRq1tt3Q6LtG79uPuT7stKtI6RAiJpsYiDuVgFXfXyPk1bHu05Gnh%2FNvWSrEt7%2FxKS3J8pVDW49%2BipDmU6aHPPKTiT%2FhvZwui7QJrhn0DZXGOyNHH13Exx3GikM80JorU%2FoXXath9PfrfNBShsMRyBWPwhXftKgTQaQtjhrFsczEqu4CcW%2FC9phEvG7ZcflGTUS%2BDVdB2hvW0j%2BFXNb1ViDx0xP8KhD6SLh6YYTEBp4Gq2sXND9mQ53vM5cetLlhi16WYzxlmQle57NJsOHJhKgHObvVPUvbkjAFnT5SQcvRpfYNY%3D";
+    //var opts={};
+  //  opts.token = token;
+    stream = WatsonSpeech.SpeechToText.recognizeFile({
+      token:token,
+      file: document.querySelector('#audiofile').files[0],
+      play: true, // play the audio out loud
+      outputElement: '#output' // CSS selector or DOM Element (optional)
+    });
+
+    stream.on('error', function(err) {
+        console.log(err);
+    });
+
+  }).catch(function(ex) {
+    console.log('parsing failed', ex)
+  })*/
+};
+
+document.querySelector('#stop').onclick = function() {
+    if (stream) {
+        stream.stop();
+    }
+};
+</script></code></pre>
+</div>
+</body>
+</html>
